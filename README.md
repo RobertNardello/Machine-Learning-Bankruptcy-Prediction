@@ -1,28 +1,34 @@
-# Breast Cancer Prediction Using XGBoost in R
+# Bankruptcy Prediction Using XGBoost in R
 
 ## Overview
 
-This project applies data mining and machine learning techniques in **R** to predict breast cancer classifications using a dataset from the **UCI Machine Learning Repository**. The model used in this analysis is **Extreme Gradient Boosting (XGBoost)**, an ensemble learning method known for strong performance on classification tasks.
+This project applies data mining and machine learning techniques in **R** to predict corporate bankruptcy using the **Polish Companies Bankruptcy** dataset from the **UCI Machine Learning Repository**. The model used in this analysis is **Extreme Gradient Boosting (XGBoost)**, an ensemble learning method known for strong performance on structured classification problems.
 
-The goal of the project is to train a predictive model using breast cancer feature data and evaluate its performance on a held-out test set.
+The goal of the project is to train a predictive model that classifies whether a company is likely to go bankrupt based on financial indicators and to evaluate model performance on a held-out test set.
 
 ## Objective
 
 The purpose of this project is to:
 
-- build a breast cancer prediction model in R
+- build a bankruptcy prediction model in R
 - apply XGBoost for classification
 - evaluate predictive performance on test data
-- identify which features contribute most to model predictions
+- identify which variables contribute most to model predictions
 
 ## Dataset
 
-The dataset used in this project was obtained from the **UCI Machine Learning Repository**. It contains predictor variables related to breast cancer observations and a target variable called `class`, which represents the classification outcome.
+The dataset used in this project was obtained from the **UCI Machine Learning Repository** and is titled **Polish Companies Bankruptcy**.
 
-- **Target variable:** `class`
+This dataset contains financial ratios and related variables used to predict whether a company will go bankrupt. The data includes multiple forecasting-period files. Based on the code used in this project, the analysis was performed on the **5thYear** dataset (`year5.csv`), which corresponds to predicting bankruptcy **1 year ahead**.
+
+- **Dataset name:** Polish Companies Bankruptcy
 - **Source:** UCI Machine Learning Repository
+- **Instances:** 10,503 in the full dataset collection
+- **Features:** 65
+- **Missing values:** Yes
+- **Target variable:** `class`
 
-The predictor variables include the remaining dataset features used to train the model.
+The predictor variables are financial indicators derived from company financial statements, while the response variable `class` indicates bankruptcy status.
 
 ## Tools and Libraries
 
@@ -46,13 +52,13 @@ The data was randomly split into:
 - 80% training data
 - 20% testing data
 
-A random seed was used so the results could be reproduced.
+A random seed was used to support reproducibility.
 
 ### 3. Feature Matrix Creation
 
 Because XGBoost requires numeric input, the data was transformed using one-hot encoding with `model.matrix()`.
 
-The training and testing datasets were then converted into `xgb.DMatrix` objects for modeling.
+The training and testing datasets were then converted into matrix format and stored as `xgb.DMatrix` objects for model training.
 
 ### 4. Model Training
 
@@ -64,7 +70,7 @@ The XGBoost model was trained using the following settings:
 - **Learning rate (`eta`):** 0.001
 - **Maximum depth:** 3
 
-The model tracked both training and test loss during training.
+The model tracked both training and test loss throughout training.
 
 ### 5. Model Evaluation
 
@@ -90,12 +96,12 @@ This project produces the following outputs:
 ## Project Structure
 
 ```text
-breast-cancer-xgboost/
+bankruptcy-prediction-xgboost/
 │
 ├── data/
 │   └── year5.csv
 ├── scripts/
-│   └── xgboost_breast_cancer.R
+│   └── xgboost_bankruptcy_prediction.R
 ├── outputs/
 │   ├── error_plot.png
 │   ├── feature_importance.png
