@@ -1,40 +1,44 @@
-# Bankruptcy Prediction Using XGBoost in R
+# Bankruptcy Prediction Using XGBoost and Random Forest in R
 
 ## Overview
 
-This project applies data mining and machine learning techniques in **R** to predict corporate bankruptcy using the **Polish Companies Bankruptcy** dataset from the **UCI Machine Learning Repository**. The model used in this analysis is **Extreme Gradient Boosting (XGBoost)**, an ensemble learning method known for strong performance on structured classification problems.
+This project applies data mining and machine learning techniques in **R** to predict corporate bankruptcy using the **Polish Companies Bankruptcy** dataset from the **UCI Machine Learning Repository**. The analysis includes two tree-based ensemble modeling approaches:
 
-The goal of the project is to train a predictive model that classifies whether a company is likely to go bankrupt based on financial indicators and to evaluate model performance on a held-out test set.
+- **Extreme Gradient Boosting (XGBoost)**
+- **Random Forest**, including a **bagging-style model**
+
+The goal of the project is to classify whether a company is likely to go bankrupt based on financial indicators and to compare the predictive performance of ensemble-based machine learning methods.
 
 ## Objective
 
 The purpose of this project is to:
 
-- build a bankruptcy prediction model in R
-- apply XGBoost for classification
-- evaluate predictive performance on test data
-- identify which variables contribute most to model predictions
+- build bankruptcy prediction models in R
+- apply XGBoost and Random Forest for classification
+- evaluate model performance on test data
+- compare ensemble learning approaches
+- identify which financial variables contribute most to predictions
 
 ## Dataset
 
-The dataset used in this project was obtained from the **UCI Machine Learning Repository** and is titled **Polish Companies Bankruptcy**.
+The dataset used in this project was obtained from the **UCI Machine Learning Repository** and is titled **Polish Companies Bankruptcy**. It is a classification dataset in the business domain and contains financial ratios designed to support bankruptcy prediction. :contentReference[oaicite:1]{index=1}
 
-This dataset contains financial ratios and related variables used to predict whether a company will go bankrupt. The data includes multiple forecasting-period files. Based on the code used in this project, the analysis was performed on the **5thYear** dataset (`year5.csv`), which corresponds to predicting bankruptcy **1 year ahead**.
+The full dataset collection contains **10,503 instances** and **65 features**, with **missing values present**. The repository separates the data into five forecasting-period files. This project uses the **5thYear** data file (`year5.csv`), which corresponds to predicting bankruptcy **1 year ahead** and contains **5,910 instances**, including bankrupt and non-bankrupt firms. :contentReference[oaicite:2]{index=2}
 
 - **Dataset name:** Polish Companies Bankruptcy
 - **Source:** UCI Machine Learning Repository
-- **Instances:** 10,503 in the full dataset collection
-- **Features:** 65
-- **Missing values:** Yes
 - **Target variable:** `class`
+- **Features:** financial ratios and related accounting indicators
+- **Selected file for this project:** `year5.csv`
 
-The predictor variables are financial indicators derived from company financial statements, while the response variable `class` indicates bankruptcy status.
+The response variable `class` indicates bankruptcy status, while the predictor variables are financial measures derived from company financial statements.
 
 ## Tools and Libraries
 
-This project was developed in R using the following packages:
+This project was developed in **R** using the following packages:
 
 - `xgboost`
+- `randomForest`
 - `magrittr`
 - `dplyr`
 - `Matrix`
@@ -43,67 +47,84 @@ This project was developed in R using the following packages:
 
 ### 1. Data Loading and Preparation
 
-The dataset was imported from a CSV file, and the target variable `class` was converted to a factor for classification.
+The dataset was imported from CSV files into R, and the target variable `class` was converted to a factor for classification.
 
 ### 2. Train-Test Split
 
-The data was randomly split into:
+The data was divided into training and testing sets using random sampling. In the XGBoost workflow, the split was approximately:
 
 - 80% training data
 - 20% testing data
 
-A random seed was used to support reproducibility.
+A random seed was used to improve reproducibility.
 
-### 3. Feature Matrix Creation
+### 3. Feature Processing
 
-Because XGBoost requires numeric input, the data was transformed using one-hot encoding with `model.matrix()`.
+For the XGBoost model, predictors were transformed into numeric matrix form using `model.matrix()`, allowing one-hot encoding where needed. The resulting matrices were then converted into `xgb.DMatrix` objects for model training.
 
-The training and testing datasets were then converted into matrix format and stored as `xgb.DMatrix` objects for model training.
+For the Random Forest and bagging models, the dataset was modeled directly using the `randomForest` package.
 
-### 4. Model Training
+### 4. Models Included
 
-The XGBoost model was trained using the following settings:
+#### XGBoost
 
-- **Objective:** `multi:softprob`
-- **Evaluation metric:** `mlogloss`
-- **Boosting rounds:** 1000
-- **Learning rate (`eta`):** 0.001
-- **Maximum depth:** 3
+The XGBoost model was trained as a classification model using:
 
-The model tracked both training and test loss throughout training.
+- objective: `multi:softprob`
+- evaluation metric: `mlogloss`
+- boosting rounds: 1000
+- learning rate (`eta`): 0.001
+- maximum tree depth: 3
+
+Training and test loss were tracked during model fitting, and feature importance was generated after training.
+
+#### Bagging
+
+A bagging-style tree ensemble was created using the `randomForest` package with a high `mtry` value, allowing most or all predictors to be considered at each split.
+
+#### Random Forest
+
+A standard Random Forest model was also trained using the `randomForest` package with a smaller `mtry` value to introduce predictor randomness and improve generalization.
 
 ### 5. Model Evaluation
 
-Model performance was evaluated using:
+The models were evaluated using outputs such as:
 
-- multiclass log loss
-- prediction output on the test set
+- prediction accuracy
 - confusion matrix
-- feature importance
+- multiclass log loss for XGBoost
+- feature importance for XGBoost
+- error comparison on the test set
 
-A training-versus-test error plot was also generated to visualize learning over time.
+The XGBoost workflow also included a training-versus-test loss plot to visualize model learning over time.
 
 ## Model Output
 
 This project produces the following outputs:
 
-- trained XGBoost classification model
-- training and test multiclass log loss plot
-- minimum test log loss
-- feature importance rankings
-- confusion matrix comparing predicted and actual class labels
+- trained XGBoost model
+- trained bagging model
+- trained Random Forest model
+- confusion matrix for classification results
+- prediction accuracy for bagging and Random Forest
+- multiclass log loss tracking for XGBoost
+- feature importance rankings for XGBoost
+- training and test loss plot
 
 ## Project Structure
 
 ```text
-bankruptcy-prediction-xgboost/
+bankruptcy-prediction/
 │
 ├── data/
-│   └── year5.csv
+│   ├── year5.csv
+│   └── bankruptcy_Train.csv
 ├── scripts/
-│   └── xgboost_bankruptcy_prediction.R
+│   ├── xgboost_bankruptcy_prediction.R
+│   └── random_forest_bankruptcy_prediction.R
 ├── outputs/
 │   ├── error_plot.png
 │   ├── feature_importance.png
-│   └── confusion_matrix.csv
+│   ├── confusion_matrix.csv
+│   └── model_metrics.csv
 └── README.md
